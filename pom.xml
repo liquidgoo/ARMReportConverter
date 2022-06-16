@@ -6,7 +6,13 @@
 
     <groupId>org.example</groupId>
     <artifactId>ARMReportConverter</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>xmlSerializer</module>
+        <module>excelReportGenerator</module>
+        <module>reportGenerator</module>
+    </modules>
     <dependencies>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -20,10 +26,5 @@
         </dependency>
 
     </dependencies>
-
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
 
 </project>
