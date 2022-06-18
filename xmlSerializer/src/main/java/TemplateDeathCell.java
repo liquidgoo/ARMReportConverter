@@ -1,5 +1,7 @@
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
+@JsonIgnoreProperties(value = "ID_DGC")
 public class TemplateDeathCell {
 
     @JacksonXmlProperty(localName = "ID_DROW", isAttribute = true)
@@ -10,7 +12,4 @@ public class TemplateDeathCell {
 
     @JacksonXmlProperty(localName = "ID_REF", isAttribute = true)
     public int referenceListId;
-
-    @JacksonXmlProperty(localName = "ID_DGC", isAttribute = true)
-    public double dgcId; //TODO ignore?
 }

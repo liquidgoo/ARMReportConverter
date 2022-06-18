@@ -5,7 +5,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 @JsonTypeName("1")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "TYPE_ROW")
-@JsonSubTypes({@JsonSubTypes.Type(ReportRow.class), @JsonSubTypes.Type(FreeBlock.class), @JsonSubTypes.Type(StringBlock.class)}) //TODO type 4
+@JsonSubTypes({@JsonSubTypes.Type(ReportRow.class), @JsonSubTypes.Type(FreeBlock.class), @JsonSubTypes.Type(StringBlock.class)})
 public class ReportRow {
 
     @JacksonXmlProperty(localName = "ID_DTABLE", isAttribute = true)

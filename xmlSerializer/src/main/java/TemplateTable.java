@@ -1,7 +1,12 @@
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
+import java.util.List;
 
+
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class TemplateTable {
 
     @JacksonXmlProperty(localName = "ID_DTABLE", isAttribute = true)
@@ -39,15 +44,40 @@ public class TemplateTable {
 
     @JacksonXmlProperty(localName = "IS_PRIORITY_ROW", isAttribute = true)
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    @JsonDeserialize(using = NumericBooleanDeserializer.class)
     public Boolean isPriorityRow;
 
 
     @JacksonXmlProperty(localName = "GRAPH_PROGRAPH")
-    public ListWrapper<TemplateGraph> graphs;
+    private ListWrapper<TemplateGraph> graphs = new ListWrapper<>();
+
+    public List<TemplateGraph> getGraphs() {
+        return graphs.list;
+    }
+
+    public void setGraphs(List<TemplateGraph> graphs) {
+        this.graphs.list = graphs;
+    }
 
     @JacksonXmlProperty(localName = "ROW_IN_TABLE")
-    public ListWrapper<TemplateRow> rows;
+    private ListWrapper<TemplateRow> rows = new ListWrapper<>();
+
+    public List<TemplateRow> getRows() {
+        return rows.list;
+    }
+
+    public void setRows(List<TemplateRow> rows) {
+        this.rows.list = rows;
+    }
 
     @JacksonXmlProperty(localName = "DEATH_GRAPH_CELL")
-    public ListWrapper<TemplateDeathCell> deathCells;
+    private ListWrapper<TemplateDeathCell> deathCells = new ListWrapper<>();
+
+    public List<TemplateDeathCell> getDeathCells() {
+        return deathCells.list;
+    }
+
+    public void setDeathCells(List<TemplateDeathCell> deathCells) {
+        this.deathCells.list = deathCells;
+    }
 }

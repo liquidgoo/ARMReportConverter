@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
@@ -10,7 +11,7 @@ public class TemplateDescription {
     public int templateId;
 
     @JacksonXmlProperty(localName = "INDEX_FT", isAttribute = true)
-    public String FTIndex; //TODO ft?
+    public String templateIndex;
 
     @JacksonXmlProperty(localName = "NAME_FT", isAttribute = true)
     public String templateName;
@@ -32,20 +33,22 @@ public class TemplateDescription {
 
     @JacksonXmlProperty(localName = "IS_HAVE_DETAIL", isAttribute = true)
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
+    @JsonDeserialize(using = NumericBooleanDeserializer.class)
     public Boolean isHaveDetail;
 
     @JacksonXmlProperty(localName = "VER_NUMBER", isAttribute = true)
     public int versionNumber;
 
     @JacksonXmlProperty(localName = "INDEX_TEMPLATE", isAttribute = true)
-    public String templateIndex;
+    public String formIndex;
 
     @JacksonXmlProperty(localName = "NAME_DOC", isAttribute = true)
     public String docName;
 
     @JacksonXmlProperty(localName = "IS_PRIVATE", isAttribute = true)
     @JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    public Boolean isPrivate; //TODO ?
+    @JsonDeserialize(using = NumericBooleanDeserializer.class)
+    public Boolean isPrivate;
 
     @JacksonXmlProperty(localName = "FORM_TYPE", isAttribute = true)
     public String formType;
@@ -57,10 +60,10 @@ public class TemplateDescription {
     public String repeatType;
 
     @JacksonXmlProperty(localName = "CODE_DET", isAttribute = true)
-    public String detCode; //TODO ?
+    public String detailName;
 
 
     @JacksonXmlElementWrapper(localName = "FORM_EXTATTR")
     @JacksonXmlProperty(localName = "row")
-    public List<Respondent> respondents; //TODO: multiple respondents?
+    public List<Respondent> respondents;
 }

@@ -16,7 +16,6 @@ public class ReportDescription {
     @JacksonXmlProperty(localName = "NAME_ESN", isAttribute = true)
     public String ESNName;
 
-    //TODO multiple users?
     @JacksonXmlProperty(localName = "USERS")
     public User user;
 }
