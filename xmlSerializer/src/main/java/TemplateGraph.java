@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class TemplateGraph {
@@ -24,6 +25,7 @@ public class TemplateGraph {
     public int width;
 
     @JacksonXmlProperty(localName = "ISLEAF", isAttribute = true)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     public Boolean isLeaf;
 
     @JacksonXmlProperty(localName = "LVL", isAttribute = true)

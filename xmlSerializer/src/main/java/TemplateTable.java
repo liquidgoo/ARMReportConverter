@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 
@@ -37,6 +38,7 @@ public class TemplateTable {
     public int unitOfMeasureWidth;
 
     @JacksonXmlProperty(localName = "IS_PRIORITY_ROW", isAttribute = true)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     public Boolean isPriorityRow;
 
 

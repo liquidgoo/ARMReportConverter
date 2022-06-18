@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 
@@ -16,8 +17,10 @@ public class StringBlockReference {
     public String name;
 
     @JacksonXmlProperty(localName = "IS_FULL_RESULT", isAttribute = true)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     public Boolean isFullResult;
 
     @JacksonXmlProperty(localName = "ISLEAF", isAttribute = true)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     public Boolean isLeaf; //TODO inheritance?
 }

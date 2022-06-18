@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 public class TemplateRow {
@@ -21,5 +22,6 @@ public class TemplateRow {
     public int referenceListId;
 
     @JacksonXmlProperty(localName = "IS_FILL_FULL_RESULT", isAttribute = true)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     public Boolean isFillFullResult;
 }

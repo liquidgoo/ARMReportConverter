@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import java.util.Date;
@@ -17,5 +18,6 @@ public class Period {
     public Date finalDate;
 
     @JacksonXmlProperty(localName = "IS_LONG_TIME_STORE", isAttribute = true)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     public Boolean isLongTimeStore;
 }

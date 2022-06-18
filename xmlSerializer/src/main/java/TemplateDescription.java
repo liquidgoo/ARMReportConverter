@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
@@ -30,6 +31,7 @@ public class TemplateDescription {
     public String periodName;
 
     @JacksonXmlProperty(localName = "IS_HAVE_DETAIL", isAttribute = true)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     public Boolean isHaveDetail;
 
     @JacksonXmlProperty(localName = "VER_NUMBER", isAttribute = true)
@@ -42,6 +44,7 @@ public class TemplateDescription {
     public String docName;
 
     @JacksonXmlProperty(localName = "IS_PRIVATE", isAttribute = true)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     public Boolean isPrivate; //TODO ?
 
     @JacksonXmlProperty(localName = "FORM_TYPE", isAttribute = true)
