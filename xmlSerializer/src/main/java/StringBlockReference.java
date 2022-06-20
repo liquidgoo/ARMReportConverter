@@ -12,7 +12,7 @@ public class StringBlockReference {
     public String code;
 
     @JacksonXmlProperty(localName = "ID_PARENT_REF", isAttribute = true)
-    public int parentId;
+    public int parentId = -1;
 
     @JacksonXmlProperty(localName = "NAME_REF", isAttribute = true)
     public String name;

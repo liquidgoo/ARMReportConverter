@@ -3,7 +3,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
@@ -22,7 +24,7 @@ public class TemplateTable {
     public String name;
 
     @JacksonXmlProperty(localName = "ID_UOM", isAttribute = true)
-    public int unitOfMeasure;
+    public int unitOfMeasure = -1;
 
     @JacksonXmlProperty(localName = "FORMAT_UOM", isAttribute = true)
     public String unitOfMeasureFormat;
@@ -79,5 +81,33 @@ public class TemplateTable {
 
     public void setDeathCells(List<TemplateDeathCell> deathCells) {
         this.deathCells.list = deathCells;
+    }
+
+    public TreeNode<TemplateGraph> graphTreeRoot;
+    public void updateGraphTree() {
+        graphTreeRoot = getGraphChildren(-1);
+    }
+
+    private TreeNode<TemplateGraph> getGraphChildren(int parentId) {
+        List<TemplateGraph> childrenGraphs = graphs.list.stream()
+                .filter((graph) -> graph.parentId == parentId).toList();
+
+        if (childrenGraphs.size() == 0) return null;
+
+        List<TreeNode<TemplateGraph>> children = childrenGraphs.stream()
+                .sorted(Comparator.comparingInt((graph) -> graph.number))
+                .map((graph -> {
+                    TreeNode<TemplateGraph> node = new TreeNode<>(graph);
+                    node.child = getGraphChildren(graph.id);
+                    return node;
+                })).toList();
+
+        TreeNode<TemplateGraph> firstChild = children.get(0);
+        TreeNode<TemplateGraph> current = firstChild;
+        for (int i = 0; i < children.size() - 1; i++) {
+            current.sibling = children.get(i + 1);
+            current = current.sibling;
+        }
+        return firstChild;
     }
 }

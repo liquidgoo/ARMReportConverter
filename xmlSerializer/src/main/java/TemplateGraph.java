@@ -11,7 +11,7 @@ public class TemplateGraph {
     public int number;
 
     @JacksonXmlProperty(localName = "ID_PARENT_DGP", isAttribute = true)
-    public int parentId;
+    public int parentId = -1;
 
     @JacksonXmlProperty(localName = "NAME_DGP", isAttribute = true)
     public String name;

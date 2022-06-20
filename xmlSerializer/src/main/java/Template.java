@@ -10,14 +10,14 @@ public class Template {
     public TemplateDescription description;
 
     @JacksonXmlProperty(localName = "PARTS")
-    public ListWrapper<TemplatePart> parts = new ListWrapper<>();
+    private ListWrapper<TemplatePart> parts = new ListWrapper<>();
 
-    private ListWrapper<TemplatePart> getParts() {
-        return parts;
+    public List<TemplatePart> getParts() {
+        return parts.list;
     }
 
-    public void setParts(ListWrapper<TemplatePart> parts) {
-        this.parts = parts;
+    public void setParts(List<TemplatePart> parts) {
+        this.parts.list = parts;
     }
 
     @JacksonXmlProperty(localName = "REFERENCES")
@@ -40,6 +40,13 @@ public class Template {
 
     public void setUnitsOfMeasure(List<UnitOfMeasure> unitsOfMeasure) {
         this.unitsOfMeasure.list = unitsOfMeasure;
+    }
+
+    public UnitOfMeasure getUnitOfMeasure(int id) {
+        for (UnitOfMeasure uom: unitsOfMeasure.list) {
+            if (uom.id == id) return uom;
+        }
+        return null;
     }
 
     @JacksonXmlProperty(localName = "PERIOD_TYPE")
