@@ -10,6 +10,9 @@ public class ReportDescription {
     @JacksonXmlProperty(localName = "ID_P", isAttribute = true)
     public int periodId;
 
+    @JacksonXmlProperty(localName = "ID_REF", isAttribute = true)
+    public int detailId;
+
     @JacksonXmlProperty(localName = "CODE_ESN", isAttribute = true)
     public String ESNCode;
 
