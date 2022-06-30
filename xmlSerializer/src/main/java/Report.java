@@ -12,15 +12,23 @@ public class Report {
 
     @JacksonXmlProperty(localName = "ROW_REPORT")
     private ListWrapper<ReportRow> rows = new ListWrapper<>();
+
     public List<ReportRow> getRows() {
         return rows.list;
     }
+
+
+    public List<ReportRow> getRowsByTableId(int tableId) {
+        return rows.list.stream().filter(row -> row.tableId == tableId).toList();
+    }
+
     public void setRows(List<ReportRow> rows) {
         this.rows.list = rows;
     }
 
     @JacksonXmlProperty(localName = "GRAPH_CELL")
     private ListWrapper<ReportCell> cells = new ListWrapper<>();
+
     public List<ReportCell> getCells() {
         return cells.list;
     }

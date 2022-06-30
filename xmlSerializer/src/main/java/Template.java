@@ -1,7 +1,9 @@
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class Template {
@@ -27,6 +29,12 @@ public class Template {
         return referenceLists.list;
     }
 
+    public Map<Integer, ReferenceList> getReferenceListsAsMap() {
+        Map<Integer, ReferenceList> map = new HashMap<>();
+        referenceLists.list.forEach(refList -> map.put(refList.id, refList));
+        return map;
+    }
+
     public void setReferenceLists(List<ReferenceList> referenceLists) {
         this.referenceLists.list = referenceLists;
     }
@@ -42,8 +50,14 @@ public class Template {
         this.unitsOfMeasure.list = unitsOfMeasure;
     }
 
+    public Map<Integer, UnitOfMeasure> getUnitsOfMeasureAsMap() {
+        Map<Integer, UnitOfMeasure> map = new HashMap<>();
+        unitsOfMeasure.list.forEach(uom -> map.put(uom.id, uom));
+        return map;
+    }
+
     public UnitOfMeasure getUnitOfMeasure(int id) {
-        for (UnitOfMeasure uom: unitsOfMeasure.list) {
+        for (UnitOfMeasure uom : unitsOfMeasure.list) {
             if (uom.id == id) return uom;
         }
         return null;
