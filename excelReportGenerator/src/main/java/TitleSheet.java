@@ -1,4 +1,5 @@
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.util.Iterator;
 import java.util.prefs.PreferenceChangeListener;
@@ -21,6 +22,7 @@ public class TitleSheet extends ExcelSheet {
     private CellStyle titleLeft;
 
     private ReferenceList detailRefList;
+
     public TitleSheet(Sheet sheet, Template template, Report report, LegalEntityInfo legalEntityInfo) {
         super(sheet);
         this.templateDescription = template.description;
@@ -28,6 +30,7 @@ public class TitleSheet extends ExcelSheet {
         this.periodType = template.periodType;
         this.legalEntityInfo = legalEntityInfo;
     }
+
     public TitleSheet(Sheet sheet, Template template, Report report, LegalEntityInfo legalEntityInfo, ReferenceList detailRefList) {
         super(sheet);
         this.templateDescription = template.description;
@@ -250,5 +253,6 @@ public class TitleSheet extends ExcelSheet {
         }
 
 
+        updateRowsRegionHeights(new CellRangeAddress(0, rowOffset + 2, 0, TITLE_WIDTH));
     }
 }

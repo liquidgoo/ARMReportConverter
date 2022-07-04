@@ -1,10 +1,8 @@
-import com.microsoft.schemas.office.office.STInsetMode;
-
 public class SupervisorCredentials {
-    private String title;
-    private String initials;
-    private String contactInfo;
-    private String date;
+    private final String title;
+    private final String initials;
+    private final String contactInfo;
+    private final String date;
 
     public String getTitle() {
         return title;
@@ -32,6 +30,7 @@ public class SupervisorCredentials {
     public SupervisorCredentials(String title, String initials, String date) {
         this.title = title;
         this.initials = initials;
+        this.contactInfo = null;
         this.date = date;
     }
 }

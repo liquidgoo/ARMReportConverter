@@ -1,5 +1,5 @@
-import org.apache.commons.math3.util.Pair;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.util.*;
 
@@ -254,6 +254,10 @@ public class TableSheet extends ExcelSheet {
         setColumnsWidth();
         fillRowNames();
         setCellsStyles();
+        updateRowsRegionHeights(new CellRangeAddress(
+                        0,DEFAULT_ROW_OFFSET + partDescriptionHeight + tableDescriptionHeight + maxGraphsLevel + rowsCount,
+                        0, DEFAULT_COLUMN_OFFSET + outsetWidth + bottomGraphsCount),
+                true);
     }
 
     public void fillCellValue(ReportCell reportCell) {

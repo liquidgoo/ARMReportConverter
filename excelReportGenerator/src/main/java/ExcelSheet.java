@@ -2,115 +2,19 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressBase;
 import org.apache.poi.ss.util.RegionUtil;
+import org.apache.poi.ss.util.SheetUtil;
 import org.apache.poi.util.Units;
 
 import java.util.*;
 
 public abstract class ExcelSheet {
-    public class RowsHeightManager {
-        private final int EMPTY_ROW_HEIGHT_PIXELS = 19;
-        private final double EMPTY_ROW_HEIGHT = Units.pixelToPoints(EMPTY_ROW_HEIGHT_PIXELS);
-        private final int ROW_HEIGHT_PIXELS = 17;
-        private final double ROW_HEIGHT = Units.pixelToPoints(ROW_HEIGHT_PIXELS);
-        private Map<Integer, Double> rowsMinHeights = new HashMap<>();
-        private TreeSet<CellRangeAddress> mergedRegions = new TreeSet<>(
-                Comparator.comparingInt((CellRangeAddress r) ->
-                                r.getFirstRow())
-                        .thenComparingInt(CellRangeAddressBase::getLastRow)
-                        .thenComparingInt(CellRangeAddress::getFirstColumn)
-                        .thenComparingInt(CellRangeAddress::getLastColumn));
-
-        public void addMergedRegion(CellRangeAddress range) {
-            mergedRegions.add(range);
-            updateRowsHeights(range.getFirstRow());
-        }
-
-        public void updateRowHeight(int rowNum, double prevHeight, double height) {
-            rowsMinHeights.put(rowNum, height);
-
-            updateRowsHeights(rowNum);
-        }
-
-        public void updateColumnWidth() {
-            Queue<Integer> rows = new LinkedList<>();
-            sheet.rowIterator().forEachRemaining(row -> rows.add(row.getRowNum()));
-            updateRowsHeights(rows);
-        }
-
-        private void updateRowsHeights(Queue<Integer> affectedRows) {
-            Set<CellRangeAddress> handledRegions = new HashSet<>();
-            while (!affectedRows.isEmpty()) {
-                int changedRow = affectedRows.poll();
-                for (CellRangeAddress range : mergedRegions) {
-                    if (handledRegions.contains(range)) continue;
-                    if (range.getFirstRow() <= changedRow && range.getLastRow() >= changedRow) {
-                        int width = 0;
-                        for (int i = range.getFirstColumn(); i <= range.getLastColumn(); i++) {
-                            width += sheet.getColumnWidth(i);
-                        }
-
-                        int mergedHeightPixels = calculateRowHeight(getOrCreateCell(range.getFirstRow(), range.getFirstColumn())
-                                .getStringCellValue(), width) * ROW_HEIGHT_PIXELS;
-                        double mergedHeight = Units.pixelToPoints(mergedHeightPixels);
-
-                        double currentHeight = 0;
-                        for (int i = range.getFirstRow(); i <= range.getLastRow(); i++) {
-                            if (rowsMinHeights.containsKey(i)) {
-                                currentHeight += rowsMinHeights.get(i);
-                            } else {
-                                currentHeight += getOrCreateRow(i).getHeightInPoints();
-                            }
-                        }
-
-                        if (currentHeight < mergedHeight) {
-                            double newHeight = mergedHeight / (range.getLastRow()- range.getFirstRow() + 1);
-                            handledRegions.add(range);
-                            for (int i = range.getFirstRow(); i <= range.getLastRow(); i++) {
-                                getOrCreateRow(i).setHeightInPoints((float) newHeight);
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-
-        private void updateRowsHeights(int rowNum) {
-            Queue<Integer> affectedRows = new LinkedList<>();
-            affectedRows.add(rowNum);
-
-            updateRowsHeights(affectedRows);
-        }
-
-        private int calculateRowHeight(String text, int columnWidth) {
-            int colwidthinchars = columnWidth / 256;
-            colwidthinchars = Math.round(colwidthinchars * 4f / 5f);
-
-            String[] chars = text.split("");
-            int neededrows = 1;
-            int counter = 0;
-            for (int i = 0; i < chars.length; i++) {
-                counter++;
-                if (counter == colwidthinchars) {
-                    neededrows++;
-                    counter = 0;
-                } else if ("\n".equals(chars[i])) {
-                    neededrows++;
-                    counter = 0;
-                }
-            }
-            return neededrows;
-        }
-    }
-
     protected final int DEFAULT_ROW_OFFSET = 1;
     protected final int DEFAULT_COLUMN_OFFSET = 1;
     protected Font tnr10Font;
     protected Font tnr11Font;
     protected Font tnr12Font;
 
-    private Sheet sheet;
-    private final RowsHeightManager rowsHeightManager = new RowsHeightManager();
+    private final Sheet sheet;
 
     protected Row getOrCreateRow(int rowNum) {
         Row row = sheet.getRow(rowNum);
@@ -127,11 +31,97 @@ public abstract class ExcelSheet {
     }
 
     protected void setCellValue(Cell cell, String value) {
-        Row row = cell.getRow();
-        double rowHeight = row.getHeightInPoints();
         cell.setCellValue(value);
-        double newRowHeight = row.getHeightInPoints();
-        rowsHeightManager.updateRowHeight(row.getRowNum(), rowHeight, newRowHeight);
+    }
+
+
+    protected void updateRowsRegionHeights(CellRangeAddress range) {
+        updateRowsRegionHeights(range, false);
+    }
+
+
+    private int getRegionWidth(CellRangeAddress range) {
+        int width = 0;
+        for (int i = range.getFirstColumn(); i <= range.getLastColumn(); i++) {
+            width += sheet.getColumnWidth(i);
+        }
+        return width;
+    }
+
+    private double getRegionHeight(CellRangeAddress range) {
+        double height = 0;
+        for (int i = range.getFirstRow(); i <= range.getLastRow(); i++) {
+            height += getOrCreateRow(i).getHeightInPoints();
+        }
+        return height;
+    }
+
+
+    protected void updateRowsRegionHeights(CellRangeAddress range, boolean backwards) {
+        Iterator<Integer> rowIterator = backwards ? new ForIterator(range.getLastRow(), range.getFirstRow() - 1, -1)
+                : new ForIterator(range.getFirstRow(), range.getLastRow() + 1);
+        int i;
+        while (rowIterator.hasNext()) {
+            i = rowIterator.next();
+            Row row = sheet.getRow(i);
+            if (row == null) continue;
+            for (int j = range.getFirstColumn(); j <= range.getLastColumn(); j++) {
+                Cell cell = row.getCell(j);
+                if (cell == null) continue;
+
+
+                boolean isCellMerged = false;
+                for (CellRangeAddress mergedRegion : sheet.getMergedRegions()) {
+                    if (i < mergedRegion.getFirstRow() || i > mergedRegion.getLastRow()
+                            || j < mergedRegion.getFirstColumn() || j > mergedRegion.getLastColumn())
+                        continue;
+                    isCellMerged = true;
+                    int modifyingRow = backwards ? mergedRegion.getFirstRow() : mergedRegion.getLastRow();
+                    if (i != modifyingRow) break;
+
+                    double height = 0;
+
+                    Iterator<Integer> mergedRowIterator = backwards ? new ForIterator(mergedRegion.getLastRow()
+                            , mergedRegion.getFirstRow(), -1)
+                            : new ForIterator(mergedRegion.getFirstRow(), mergedRegion.getLastRow());
+
+                    int k;
+                    while (mergedRowIterator.hasNext()) {
+                        k = mergedRowIterator.next();
+                        height += getOrCreateRow(k).getHeightInPoints();
+                    }
+
+                    Cell mergedRegionContentCell = getOrCreateCell(mergedRegion.getFirstRow(), mergedRegion.getFirstColumn());
+                    double requiredHeight = HeightUtil.calculateHeight(mergedRegionContentCell
+                            .getStringCellValue()
+                            , getWorkbook().getFontAt(mergedRegionContentCell.getCellStyle().getFontIndex()).getFontHeightInPoints()
+                            , PixelUtil.widthUnits2Pixel(getRegionWidth(mergedRegion)));
+
+
+                    if (requiredHeight > height + row.getHeightInPoints())
+                        row.setHeightInPoints((float) (requiredHeight - height));
+                    break;
+                }
+                if (!isCellMerged) {
+
+                    CellType type = cell.getCellType();
+                    String value;
+                    if (type == CellType.NUMERIC) {
+                        value = Double.toString(cell.getNumericCellValue());
+                    } else {
+                        value = cell.getStringCellValue();
+                    }
+
+                    double height = HeightUtil.calculateHeight(value
+                            , getWorkbook().getFontAt(cell.getCellStyle().getFontIndex()).getFontHeightInPoints()
+                            , PixelUtil.widthUnits2Pixel(sheet.getColumnWidth(j)));
+
+
+                    if (height > row.getHeightInPoints())
+                        row.setHeightInPoints((float) height);
+                }
+            }
+        }
     }
 
 
@@ -150,7 +140,7 @@ public abstract class ExcelSheet {
         int rowHeight = row.getHeight();
         cell.setCellValue(value);
         int newRowHeight = row.getHeight();
-        rowsHeightManager.updateRowHeight(row.getRowNum(), rowHeight, newRowHeight);
+        //rowsHeightManager.updateRowHeight(row.getRowNum(), rowHeight, newRowHeight);
     }
 
     protected void setCellValue(Row row, int columnNum, int value) {
@@ -165,7 +155,7 @@ public abstract class ExcelSheet {
 
     protected void mergeRegion(CellRangeAddress cellRangeAddress) {
         sheet.addMergedRegion(cellRangeAddress);
-        rowsHeightManager.addMergedRegion(cellRangeAddress);
+        //rowsHeightManager.addMergedRegion(cellRangeAddress);
 
     }
 
@@ -182,7 +172,7 @@ public abstract class ExcelSheet {
 
     protected void setColumnWidth(int columnNum, int widthPixels) {
         sheet.setColumnWidth(columnNum, PixelUtil.pixel2WidthUnits(widthPixels));
-        rowsHeightManager.updateColumnWidth();
+        //rowsHeightManager.updateColumnWidth();
     }
 
     protected abstract void setColumnsWidth();

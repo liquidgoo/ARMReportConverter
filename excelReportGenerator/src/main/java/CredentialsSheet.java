@@ -1,4 +1,5 @@
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 public class CredentialsSheet extends ExcelSheet {
     private SupervisorCredentials supervisorCredentials;
@@ -110,7 +111,7 @@ public class CredentialsSheet extends ExcelSheet {
         mergeReginWidthBottomBorder(rowOffset, columnOffset, 1, CREDENTIALS_WIDTH);
         mergeRegion(rowOffset + 1, columnOffset, 1, CREDENTIALS_WIDTH);
 
-        columnOffset = TOTAL_WIDTH - DATE_WIDTH + columnOffset + 1;
+        columnOffset = TOTAL_WIDTH - DATE_WIDTH + DEFAULT_COLUMN_OFFSET + 1;
         cell = getOrCreateCell(contactInfoDateRow, columnOffset);
         setCellValue(cell, supervisorCredentials.getDate());
         cell.setCellStyle(signatureBottomStyle);
@@ -119,6 +120,9 @@ public class CredentialsSheet extends ExcelSheet {
         cell.setCellStyle(signatureTopStyle);
         mergeReginWidthBottomBorder(rowOffset, columnOffset, 1, DATE_WIDTH);
         mergeRegion(rowOffset + 1, columnOffset, 1, DATE_WIDTH);
+
+
+        updateRowsRegionHeights(new CellRangeAddress(0 ,rowOffset + 1, 0, TOTAL_WIDTH));
     }
 
     public CredentialsSheet(Sheet sheet, SupervisorCredentials supervisorCredentials, User user) {

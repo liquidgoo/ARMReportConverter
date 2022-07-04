@@ -11,7 +11,7 @@ public class PixelUtil {
         return widthUnits;
     }
 
-    public static int widthUnits2Pixel(short widthUnits) {
+    public static int widthUnits2Pixel(int widthUnits) {
         int pixels = (widthUnits / EXCEL_COLUMN_WIDTH_FACTOR) * UNIT_OFFSET_LENGTH;
         int offsetWidthUnits = widthUnits % EXCEL_COLUMN_WIDTH_FACTOR;
         pixels += Math.floor((float) offsetWidthUnits / ((float) EXCEL_COLUMN_WIDTH_FACTOR / UNIT_OFFSET_LENGTH));
